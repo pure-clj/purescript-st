@@ -3,56 +3,56 @@
 
 (defn map_ [f]
   (fn [a]
-    (fn []
-      (f (a)))))
+    (fn [& _]
+      (f (a nil)))))
 
 (defn pure_ [a]
-  (fn []
+  (fn [& _]
     a))
 
 (defn bind_ [a]
   (fn [f]
-    (fn []
-      ((f (a))))))
+    (fn [& _]
+      ((f (a nil)) nil))))
 
 (defn run [f]
-  (f))
+  (f nil))
 
 (defn while [f]
   (fn [a]
-    (fn []
-      (clojure.core/while (f)
-        (a)))))
+    (fn [& _]
+      (clojure.core/while (f nil)
+        (a nil)))))
 
 (defn for [lo]
   (fn [hi]
     (fn [f]
-      (fn []
+      (fn [& _]
         (doseq [i (range lo hi)]
-          ((f i)))))))
+          ((f i) nil))))))
 
 (defn foreach [as]
   (fn [f]
-    (fn []
+    (fn [& _]
       (doseq [x as]
-        ((f x))))))
+        ((f x) nil)))))
 
 (defn new [val]
-  (fn []
+  (fn [& _]
     (atom val)))
 
 (defn read [ref]
-  (fn []
+  (fn [& _]
     @ref))
 
 (defn modify' [f]
   (fn [ref]
-    (fn []
+    (fn [& _]
       (let [t (f @ref)]
         (reset! ref (get t "state"))
         (get t "value")))))
 
 (defn write [a]
   (fn [ref]
-    (fn []
+    (fn [& _]
       (reset! ref a))))
